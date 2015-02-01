@@ -30,7 +30,7 @@
     {
       this.components = new System.ComponentModel.Container();
       this.GroupeBox = new System.Windows.Forms.GroupBox();
-      this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+      this.DaysCountNumeric = new System.Windows.Forms.NumericUpDown();
       this.EndDate = new System.Windows.Forms.MaskedTextBox();
       this.StartDate = new System.Windows.Forms.MaskedTextBox();
       this.label2 = new System.Windows.Forms.Label();
@@ -39,12 +39,12 @@
       this.calc_button = new System.Windows.Forms.Button();
       this.zedGraph = new ZedGraph.ZedGraphControl();
       this.GroupeBox.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.DaysCountNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // GroupeBox
       // 
-      this.GroupeBox.Controls.Add(this.numericUpDown1);
+      this.GroupeBox.Controls.Add(this.DaysCountNumeric);
       this.GroupeBox.Controls.Add(this.EndDate);
       this.GroupeBox.Controls.Add(this.StartDate);
       this.GroupeBox.Controls.Add(this.label2);
@@ -58,28 +58,28 @@
       this.GroupeBox.TabStop = false;
       this.GroupeBox.Text = "параметры";
       // 
-      // numericUpDown1
+      // DaysCountNumeric
       // 
-      this.numericUpDown1.Location = new System.Drawing.Point(107, 65);
-      this.numericUpDown1.Maximum = new decimal(new int[] {
+      this.DaysCountNumeric.Location = new System.Drawing.Point(107, 65);
+      this.DaysCountNumeric.Maximum = new decimal(new int[] {
             180,
             0,
             0,
             0});
-      this.numericUpDown1.Minimum = new decimal(new int[] {
+      this.DaysCountNumeric.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-      this.numericUpDown1.Name = "numericUpDown1";
-      this.numericUpDown1.Size = new System.Drawing.Size(69, 20);
-      this.numericUpDown1.TabIndex = 6;
-      this.numericUpDown1.Value = new decimal(new int[] {
-            1,
+      this.DaysCountNumeric.Name = "DaysCountNumeric";
+      this.DaysCountNumeric.Size = new System.Drawing.Size(69, 20);
+      this.DaysCountNumeric.TabIndex = 6;
+      this.DaysCountNumeric.Value = new decimal(new int[] {
+            2,
             0,
             0,
             0});
-      this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+      this.DaysCountNumeric.ValueChanged += new System.EventHandler(this.DaysCountNumeric_ValueChanged);
       // 
       // EndDate
       // 
@@ -167,21 +167,15 @@
       this.Load += new System.EventHandler(this.FLoadStat_Load);
       this.GroupeBox.ResumeLayout(false);
       this.GroupeBox.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.DaysCountNumeric)).EndInit();
       this.ResumeLayout(false);
 
-      //customcode
-      this.zedGraph.GraphPane.XAxis.Title.IsVisible = false;
-      this.zedGraph.GraphPane.YAxis.Title.IsVisible = false;
-      this.zedGraph.GraphPane.Margin.Left = 0;
-      this.zedGraph.GraphPane.Margin.Left = 0;
-      this.zedGraph.GraphPane.IsFontsScaled = false;
     }
 
     #endregion
 
     private System.Windows.Forms.GroupBox GroupeBox;
-    private System.Windows.Forms.NumericUpDown numericUpDown1;
+    private System.Windows.Forms.NumericUpDown DaysCountNumeric;
     private System.Windows.Forms.MaskedTextBox StartDate;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label1;

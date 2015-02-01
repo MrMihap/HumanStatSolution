@@ -72,9 +72,6 @@ namespace LiveDurationDispersion.Modules
         errorList.Add(i-2, values[i].Y - 10, values[i].Y + 10);
       }
 
-
-
-
       // Создадим точки ошибок
       ErrorBarItem errorCurve = pane.AddErrorBar("Error", errorList, Color.Black);
       // Создадим кривую-гистограмму
@@ -122,9 +119,9 @@ namespace LiveDurationDispersion.Modules
       this.zedGraph.GraphPane.IsFontsScaled = false;
     }
 
-    private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+    private void DaysCountNumeric_ValueChanged(object sender, EventArgs e)
     {
-
+      DayCount = (int)DaysCountNumeric.Value;
     }
   }
   public class HumanInfo
