@@ -38,11 +38,19 @@ namespace LiveDurationDispersion.Modules
       conn.Open();
       OleDbCommand cmd = new OleDbCommand("SELECT * FROM Главная ", conn);
       OleDbDataReader reader = cmd.ExecuteReader();
+#if DEBUG
+      int debugCount = 2000;
+#endif
       while (reader.Read())
       {
         try
         {
-          //Peoples.Add(new HumanInfo(reader));
+          Peoples.Add(new HumanInfo(reader));
+#if DEBUG
+          debugCount--;
+          if (debugCount < 1)
+            break;
+#endif
         }
         catch
         {
@@ -50,6 +58,14 @@ namespace LiveDurationDispersion.Modules
         }
       }
       MessageBox.Show("Data Loaded Successfuly");
+      Dictionary<int, List<int>> StatCollection = new Dictionary<int, List<int>>();
+
+      foreach (HumanInfo person in Peoples)
+      {
+        int LifeLength = (person.DethDate - person.Bdate).Days/(int)365;
+        if (!StatCollection.ContainsKey(person.Bdate.DayOfYear)) StatCollection.Add(person.Bdate.DayOfYear, new List<int>());
+        StatCollection[person.Bdate.DayOfYear].Add(LifeLength);
+      }
 
       // Получим панель для рисования
       GraphPane pane = zedGraph.GraphPane;
@@ -98,18 +114,7 @@ namespace LiveDurationDispersion.Modules
       // Обновляем график
       zedGraph.Invalidate();
     }
-    public DataSet WareHouseCon()
-    {
-      string command = "SELECT * FROM Store";
-      OleDbConnection cnn = new OleDbConnection(Settings.Default.DbConnectionString);
-      cnn.Open();
-      DataSet ds = new DataSet();
-      OleDbDataAdapter adapter = new OleDbDataAdapter(command, cnn);
-      adapter.Fill(ds);
-      cnn.Close();
-      return ds;
-    }
-
+   
     private void zedGraph_Load(object sender, EventArgs e)
     {
       this.zedGraph.GraphPane.XAxis.Title.IsVisible = false;

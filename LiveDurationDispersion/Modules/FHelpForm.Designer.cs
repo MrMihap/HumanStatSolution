@@ -54,13 +54,9 @@
       this.Controls.Add(this.zedGraph);
       this.Name = "FHelpForm";
       this.Text = "FHelpForm";
+      this.Load += new System.EventHandler(this.FHelpForm_Load);
       this.ResumeLayout(false);
 
-      this.zedGraph.GraphPane.XAxis.Title.IsVisible = false;
-      this.zedGraph.GraphPane.YAxis.Title.IsVisible = false;
-      this.zedGraph.GraphPane.Margin.Left = 0;
-      this.zedGraph.GraphPane.Margin.Left = 0;
-      this.zedGraph.GraphPane.IsFontsScaled = false;
     }
 
     #endregion
