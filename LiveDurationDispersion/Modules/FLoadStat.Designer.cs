@@ -30,6 +30,7 @@
     {
       this.components = new System.ComponentModel.Container();
       this.GroupeBox = new System.Windows.Forms.GroupBox();
+      this.PeopleCountMonitor = new System.Windows.Forms.TextBox();
       this.DaysCountNumeric = new System.Windows.Forms.NumericUpDown();
       this.EndDate = new System.Windows.Forms.MaskedTextBox();
       this.StartDate = new System.Windows.Forms.MaskedTextBox();
@@ -44,6 +45,7 @@
       // 
       // GroupeBox
       // 
+      this.GroupeBox.Controls.Add(this.PeopleCountMonitor);
       this.GroupeBox.Controls.Add(this.DaysCountNumeric);
       this.GroupeBox.Controls.Add(this.EndDate);
       this.GroupeBox.Controls.Add(this.StartDate);
@@ -57,6 +59,13 @@
       this.GroupeBox.TabIndex = 1;
       this.GroupeBox.TabStop = false;
       this.GroupeBox.Text = "параметры";
+      // 
+      // PeopleCountMonitor
+      // 
+      this.PeopleCountMonitor.Location = new System.Drawing.Point(28, 91);
+      this.PeopleCountMonitor.Name = "PeopleCountMonitor";
+      this.PeopleCountMonitor.Size = new System.Drawing.Size(40, 20);
+      this.PeopleCountMonitor.TabIndex = 7;
       // 
       // DaysCountNumeric
       // 
@@ -122,11 +131,11 @@
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(7, 20);
+      this.label1.Location = new System.Drawing.Point(7, 94);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(50, 13);
+      this.label1.Size = new System.Drawing.Size(15, 13);
       this.label1.TabIndex = 1;
-      this.label1.Text = "дата нач";
+      this.label1.Text = "N";
       // 
       // calc_button
       // 
@@ -164,6 +173,7 @@
       this.Controls.Add(this.GroupeBox);
       this.Name = "FLoadStat";
       this.Text = "FLoadStat";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FLoadStat_FormClosing);
       this.Load += new System.EventHandler(this.FLoadStat_Load);
       this.GroupeBox.ResumeLayout(false);
       this.GroupeBox.PerformLayout();
@@ -184,5 +194,6 @@
     private System.Windows.Forms.Label label4;
 
     private ZedGraph.ZedGraphControl zedGraph;
+    private System.Windows.Forms.TextBox PeopleCountMonitor;
   }
 }

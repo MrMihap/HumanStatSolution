@@ -8,65 +8,40 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.OleDb;
+using System.Threading;
 using ZedGraph;
 using LiveDurationDispersion.Properties;
 namespace LiveDurationDispersion.Modules
 {
   public partial class FLoadStat : Form
   {
+    public delegate void OnDataLoadedDelegate(List<HumanInfo> Peoples);
+    public event OnDataLoadedDelegate OnDataLoaded;
     List<HumanInfo> Peoples = new List<HumanInfo>();
     Dictionary<int, List<int>> LiveDurationDisp = new Dictionary<int, List<int>>();
-    HumanDBDataSet _db = new HumanDBDataSet();
     int DayCount = 1;
+    Thread dataLoadThread;
     public FLoadStat()
     {
       InitializeComponent();
+      OnDataLoaded += FLoadStat_OnDataLoaded;
     }
 
-    private void FLoadStat_Load(object sender, EventArgs e)
+    void FLoadStat_OnDataLoaded(List<HumanInfo> Peoples)
     {
-
-    }
-
-    private void calc_button_Click(object sender, EventArgs e)
-    {
-      DateTime BeginDate = (DateTime)StartDate.ValidateText();
-      DateTime StopDate = (DateTime)EndDate.ValidateText();
-
-      //string connectionString = "provider=Microsoft.Jet.OLEDB.4.0;" + @"data source=C:\data\dbase.mdb";
-      OleDbConnection conn = new OleDbConnection(Settings.Default.DbConnectionString);
-      conn.Open();
-      OleDbCommand cmd = new OleDbCommand("SELECT * FROM Главная ", conn);
-      OleDbDataReader reader = cmd.ExecuteReader();
-#if DEBUG
-      int debugCount = 2000;
-#endif
-      while (reader.Read())
-      {
-        try
-        {
-          Peoples.Add(new HumanInfo(reader));
-#if DEBUG
-          debugCount--;
-          if (debugCount < 1)
-            break;
-#endif
-        }
-        catch
-        {
-
-        }
-      }
       MessageBox.Show("Data Loaded Successfuly");
       Dictionary<int, List<int>> StatCollection = new Dictionary<int, List<int>>();
 
       foreach (HumanInfo person in Peoples)
       {
-        int LifeLength = (person.DethDate - person.Bdate).Days/(int)365;
-        if (!StatCollection.ContainsKey(person.Bdate.DayOfYear)) StatCollection.Add(person.Bdate.DayOfYear, new List<int>());
-        StatCollection[person.Bdate.DayOfYear].Add(LifeLength);
+        int LifeLength = (person.DethDate - person.Bdate).Days / (int)365;
+        int Key = 365 * person.Bdate.Year + person.Bdate.DayOfYear;
+        if (!StatCollection.ContainsKey(Key)) StatCollection.Add(Key, new List<int>());
+        StatCollection[Key].Add(LifeLength);
       }
-
+      FHelpForm form = new FHelpForm(StatCollection);
+      form.MdiParent = this.MdiParent;
+      form.Show();
       // Получим панель для рисования
       GraphPane pane = zedGraph.GraphPane;
 
@@ -84,8 +59,8 @@ namespace LiveDurationDispersion.Modules
       // Заполним данные
       for (int i = 0; i < itemscount; i++)
       {
-        values.Add(i-2, rnd.Next(100));
-        errorList.Add(i-2, values[i].Y - 10, values[i].Y + 10);
+        values.Add(i - 2, rnd.Next(100));
+        errorList.Add(i - 2, values[i].Y - 10, values[i].Y + 10);
       }
 
       // Создадим точки ошибок
@@ -114,7 +89,62 @@ namespace LiveDurationDispersion.Modules
       // Обновляем график
       zedGraph.Invalidate();
     }
-   
+
+    private void FLoadStat_Load(object sender, EventArgs e)
+    {
+
+    }
+    private void dataloadparalelfunction()
+    {
+      //DateTime BeginDate = (DateTime)StartDate.ValidateText();
+      //DateTime StopDate = (DateTime)EndDate.ValidateText();
+
+      //string connectionString = "provider=Microsoft.Jet.OLEDB.4.0;" + @"data source=C:\data\dbase.mdb";
+      OleDbConnection conn = new OleDbConnection(Settings.Default.DbConnectionString);
+      conn.Open();
+      OleDbCommand cmd = new OleDbCommand("SELECT * FROM Главная ", conn);
+      OleDbDataReader reader = cmd.ExecuteReader();
+      int last = 0;
+
+#if DEBUG
+      int debugCount = 1000;
+#endif
+      while (reader.Read())
+      {
+        try
+        {
+          Peoples.Add(new HumanInfo(reader));
+#if DEBUG
+          debugCount--;
+          if (debugCount < 1)
+            break;
+#endif
+          if (last + 150 < Peoples.Count)
+          {
+            last = Peoples.Count;
+            if (PeopleCountMonitor.InvokeRequired)
+            {
+              PeopleCountMonitor.BeginInvoke((Action)(() =>{PeopleCountMonitor.Text = last.ToString();}));
+            }
+            else
+
+            PeopleCountMonitor.Text = last.ToString();
+          }
+        }
+        catch
+        {
+
+        }
+      }
+      OnDataLoaded.BeginInvoke(Peoples,null, null);
+    }
+
+    private void calc_button_Click(object sender, EventArgs e)
+    {
+      dataLoadThread = new Thread(dataloadparalelfunction);
+      dataLoadThread.Start();
+    }
+     
     private void zedGraph_Load(object sender, EventArgs e)
     {
       this.zedGraph.GraphPane.XAxis.Title.IsVisible = false;
@@ -127,6 +157,12 @@ namespace LiveDurationDispersion.Modules
     private void DaysCountNumeric_ValueChanged(object sender, EventArgs e)
     {
       DayCount = (int)DaysCountNumeric.Value;
+    }
+
+    private void FLoadStat_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (dataLoadThread != null && dataLoadThread.IsAlive)
+        dataLoadThread.Abort();
     }
   }
   public class HumanInfo
@@ -153,6 +189,8 @@ namespace LiveDurationDispersion.Modules
         this.Bdate = DateTime.Parse(Fields["дата рождения"]);
         this.DethDate = DateTime.Parse(Fields["дата смерти"]);
         this.sex = Fields["пол"][0];
+        if (Bdate.Month == 11 && Bdate.Day == 11)
+          throw new InvalidOperationException("11.11 special error code");
       }
       catch (Exception e)
       {

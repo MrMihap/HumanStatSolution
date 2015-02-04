@@ -21,7 +21,7 @@ namespace LiveDurationDispersion.Modules
     public FHelpForm(Dictionary<int, List<int>> collection)
     {
       InitializeComponent();
-
+      Statcollection = collection;
     }
 
     private void FHelpForm_Load(object sender, EventArgs e)
@@ -38,16 +38,12 @@ namespace LiveDurationDispersion.Modules
 
       // Высота столбцов
       PointPairList values = new PointPairList();
-      PointPairList errorList = new PointPairList();
       // Заполним данные
-      for (int i = 0; i < itemscount; i++)
+      foreach(int day in Statcollection.Keys)
       {
-        values.Add(i - 2, rnd.Next(100));
-        errorList.Add(i - 2, values[i].Y - 10, values[i].Y + 10);
+        values.Add(day, Statcollection[day].Count);
       }
 
-      // Создадим точки ошибок
-      ErrorBarItem errorCurve = pane.AddErrorBar("Error", errorList, Color.Black);
       // Создадим кривую-гистограмму
       BarItem curve = pane.AddBar("Гистограмма", values, Color.Blue);
 
